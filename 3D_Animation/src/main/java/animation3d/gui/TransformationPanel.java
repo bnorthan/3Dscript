@@ -12,6 +12,7 @@ import java.util.ArrayList;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 
@@ -36,6 +37,7 @@ public class TransformationPanel extends JPanel implements FocusListener, Number
 	public static interface Listener {
 		public void transformationChanged(float ax, float ay, float az, float dx, float dy, float dz, float s);
 		public void resetTransformation();
+		public void applyTransformation(float ax, float ay, float az, float dx, float dy, float dz, float s);
 	}
 
 	private ArrayList<Listener> listeners =	new ArrayList<Listener>();
@@ -120,6 +122,21 @@ public class TransformationPanel extends JPanel implements FocusListener, Number
 			}
 		});
 		add(reset, c);
+		
+		c.anchor = GridBagConstraints.CENTER;
+		c.gridx = 4;
+		c.gridy = 3;
+		c.gridwidth = 2;
+		JButton apply = new JButton("Apply");
+		apply.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				for(Listener l : listeners) {
+					l.applyTransformation(getAngleX(), getAngleY(), getAngleZ(), getTranslationX(), getTranslationY(), getTranslationZ(), getScale());
+				}
+			}
+		});
+		add(apply, c);
 
 		setTransformation(ax, ay, az, dx, dy, dz, s);
 	}

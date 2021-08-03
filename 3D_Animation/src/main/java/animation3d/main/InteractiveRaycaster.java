@@ -23,6 +23,7 @@ import java.util.concurrent.TimeUnit;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
+import javax.swing.JOptionPane;
 import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
 
@@ -61,6 +62,10 @@ import ij.process.ByteProcessor;
 import ij.process.ColorProcessor;
 import ij.process.ImageProcessor;
 import ij.process.ImageStatistics;
+
+import net.imagej.ImageJ;
+import org.scijava.Context;
+import org.scijava.command.CommandService;
 
 /*
  * TODOs
@@ -153,7 +158,7 @@ public class InteractiveRaycaster implements PlugInFilter {
 	public void run(ImageProcessor ip) {
 		setLookAndFeel();
 		calculateChannelMinAndMax();
-
+		
 		try {
 			renderer = new Renderer3D(image, image.getWidth(), image.getHeight());
 		} catch(UnsatisfiedLinkError e) {
@@ -387,6 +392,16 @@ public class InteractiveRaycaster implements PlugInFilter {
 			@Override
 			public void resetTransformation() {
 				InteractiveRaycaster.this.resetTransformation();
+			}
+			
+			@Override
+			public void applyTransformation(float ax, float ay, float az, float dx, float dy, float dz, float s) {
+				
+				final Context context = (Context)IJ.runPlugIn("org.scijava.Context", "");
+				CommandService cmd = context.getService(CommandService.class);
+				
+				cmd.run("com.tnia.Transform", true, "data", image, "xSpace",1,"ySpace",1,"zSpace",3,"xRotate",ax, "yRotate", ay, "zRotate",az);
+				
 			}
 		});
 
